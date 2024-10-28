@@ -5,11 +5,11 @@ import org.springframework.stereotype.Component
 
 @Component
 class MealTransactionStrategy: TransactionStrategy {
-    override fun isAppliedTo(mcc: String) =
-        mcc == "5811" || mcc == "5812"
+    override fun isAppliedTo(mcc: String, account: AccountEntity, amount: Double) =
+        (mcc == "5811" || mcc == "5812") && account.mealBalance >= amount
 
     override fun execute(account: AccountEntity, amount: Double): Boolean {
-        return if(amount > 0.0 && account.mealBalance >= amount) {
+        return if(amount > 0.0) {
             account.mealBalance -= amount
             true
         } else false

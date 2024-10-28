@@ -7,26 +7,39 @@ import org.junit.jupiter.api.Test
 
 class CashTransactionStrategyTest {
     private val cashStrategy = CashTransactionStrategy()
+    private val accountEntity = AccountEntity(
+        foodBalance = 200.0,
+        mealBalance = 300.0,
+        cashBalance = 150.0
+    )
+    private val amount = 100.0
 
     @Nested
     inner class IsAppliedTo {
         @Test
-        fun `returns true when mcc is not 5411 5412 5811 or 5812`() {
-            val result = cashStrategy.isAppliedTo("5410")
+        fun `returns true when mcc is not 5411 5412 5811 or 5812 and balance is bigger than amount`() {
+            val result = cashStrategy.isAppliedTo("5410", accountEntity, amount)
 
             assertThat(result).isTrue()
         }
 
         @Test
-        fun `returns true when mcc is empty`() {
-            val result = cashStrategy.isAppliedTo("")
+        fun `returns true when mcc is empty and balance is bigger than amount`() {
+            val result = cashStrategy.isAppliedTo("", accountEntity, amount)
 
             assertThat(result).isTrue()
         }
 
         @Test
         fun `returns false when mcc is not applicable`() {
-            val result = cashStrategy.isAppliedTo("5411")
+            val result = cashStrategy.isAppliedTo("5411", accountEntity, amount)
+
+            assertThat(result).isFalse()
+        }
+
+        @Test
+        fun `returns false when mcc is applicable but amount is bigger than balance`() {
+            val result = cashStrategy.isAppliedTo("5411", accountEntity, 350.0)
 
             assertThat(result).isFalse()
         }
@@ -36,53 +49,13 @@ class CashTransactionStrategyTest {
     inner class Execute {
         @Test
         fun `returns true when balance is enough to execute debit`() {
-            val accountEntity = AccountEntity(
-                foodBalance = 200.0,
-                mealBalance = 300.0,
-                cashBalance = 150.0
-            )
-            val amount = 100.0
-
             val result = cashStrategy.execute(accountEntity, amount)
 
             assertThat(result).isTrue()
-        }
-
-        @Test
-        fun `returns true when balance is exactly the same amount to execute debit`() {
-            val accountEntity = AccountEntity(
-                foodBalance = 200.0,
-                mealBalance = 300.0,
-                cashBalance = 100.0
-            )
-            val amount = 100.0
-
-            val result = cashStrategy.execute(accountEntity, amount)
-
-            assertThat(result).isTrue()
-        }
-
-        @Test
-        fun `returns false when balance is not enough to execute debit`() {
-            val accountEntity = AccountEntity(
-                foodBalance = 200.0,
-                mealBalance = 300.0,
-                cashBalance = 50.0
-            )
-            val amount = 100.0
-
-            val result = cashStrategy.execute(accountEntity, amount)
-
-            assertThat(result).isFalse()
         }
 
         @Test
         fun `returns false when amount to debit is 0`() {
-            val accountEntity = AccountEntity(
-                foodBalance = 200.0,
-                mealBalance = 300.0,
-                cashBalance = 100.0
-            )
             val amount = 0.0
 
             val result = cashStrategy.execute(accountEntity, amount)
