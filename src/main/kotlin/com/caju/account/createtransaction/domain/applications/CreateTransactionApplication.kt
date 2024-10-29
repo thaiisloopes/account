@@ -2,6 +2,7 @@ package com.caju.account.createtransaction.domain.applications
 
 import com.caju.account.commons.infra.repositories.AccountRepository
 import com.caju.account.commons.infra.repositories.resources.AccountEntity
+import com.caju.account.createtransaction.domain.Merchant
 import com.caju.account.createtransaction.domain.strategies.TransactionStrategy
 import com.caju.account.createtransaction.inbound.resources.APPROVED_TRANSACTION
 import com.caju.account.createtransaction.inbound.resources.REJECTED_BY_MISSING_BALANCE
@@ -20,7 +21,7 @@ class CreateTransactionApplication(
             ?: return REJECTED_BY_UNKNOWN_ERROR
 
         return accountEntity.let {
-            val strategy = strategies.find { it.isAppliedTo(mcc, accountEntity, amount) }
+            val strategy = strategies.find { it.isAppliedTo(getMcc(mcc, merchant), accountEntity, amount) }
 
             if(strategy != null) {
                 handleApprovedTransaction(strategy, accountEntity, amount)
@@ -36,5 +37,9 @@ class CreateTransactionApplication(
         strategy.execute(account, amount)
         accountRepository.save(account)
         return APPROVED_TRANSACTION
+    }
+
+    private fun getMcc(mcc: String, merchant: String): String {
+        return Merchant.getMccFrom(merchant).ifEmpty { mcc }
     }
 }
