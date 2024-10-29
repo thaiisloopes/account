@@ -35,10 +35,20 @@ Finally, you can run the application:
   SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
 ```
 
-In order to try to authorize a transaction, you can run the following curl:
-
+In order to create a new account with given balances, you can run the following example curl:
 ```shell
-curl --location 'localhost:8000/account/transactions' \
+curl --location 'localhost:8000/accounts' \
+--header 'Content-Type: application/json' \
+--data '{
+	"foodBalance": 100.0,
+    "mealBalance": 200.0,
+    "cashBalance": 0.0
+}'
+```
+
+In order to try to authorize a transaction, you can run the following example curl:
+```shell
+curl --location 'localhost:8000/transactions' \
 --header 'Content-Type: application/json' \
 --data '{
 	"account": "1",
