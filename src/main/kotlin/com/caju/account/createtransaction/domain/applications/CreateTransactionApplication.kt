@@ -1,7 +1,9 @@
 package com.caju.account.createtransaction.domain.applications
 
 import com.caju.account.commons.infra.repositories.AccountRepository
+import com.caju.account.commons.infra.repositories.TransactionRepository
 import com.caju.account.commons.infra.repositories.resources.AccountEntity
+import com.caju.account.commons.infra.repositories.resources.TransactionEntity
 import com.caju.account.createtransaction.domain.Merchant
 import com.caju.account.createtransaction.domain.strategies.TransactionStrategy
 import com.caju.account.createtransaction.inbound.resources.APPROVED_TRANSACTION
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service
 @Service
 class CreateTransactionApplication(
     private val accountRepository: AccountRepository,
+    private val transactionRepository: TransactionRepository,
     private val strategies: List<TransactionStrategy>
 ) {
     @Transactional
@@ -24,7 +27,8 @@ class CreateTransactionApplication(
             val strategy = strategies.find { it.isAppliedTo(getMcc(mcc, merchant), accountEntity, amount) }
 
             if(strategy != null) {
-                handleApprovedTransaction(strategy, accountEntity, amount)
+                val transactionEntity = TransactionEntity(accountId, amount, merchant, getMcc(mcc, merchant))
+                handleApprovedTransaction(strategy, accountEntity, transactionEntity, amount)
             } else REJECTED_BY_MISSING_BALANCE
         }
     }
@@ -32,10 +36,12 @@ class CreateTransactionApplication(
     private fun handleApprovedTransaction(
         strategy: TransactionStrategy,
         account: AccountEntity,
+        transaction: TransactionEntity,
         amount: Double
     ): String {
         strategy.execute(account, amount)
         accountRepository.save(account)
+        transactionRepository.save(transaction)
         return APPROVED_TRANSACTION
     }
 

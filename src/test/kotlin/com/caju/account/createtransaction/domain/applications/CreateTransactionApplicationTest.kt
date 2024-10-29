@@ -1,16 +1,15 @@
 package com.caju.account.createtransaction.domain.applications
 
 import com.caju.account.commons.infra.repositories.AccountRepository
+import com.caju.account.commons.infra.repositories.TransactionRepository
 import com.caju.account.commons.infra.repositories.resources.AccountEntity
+import com.caju.account.commons.infra.repositories.resources.TransactionEntity
 import com.caju.account.createtransaction.domain.strategies.TransactionStrategy
 import com.caju.account.createtransaction.inbound.resources.APPROVED_TRANSACTION
 import com.caju.account.createtransaction.inbound.resources.REJECTED_BY_MISSING_BALANCE
 import com.caju.account.createtransaction.inbound.resources.REJECTED_BY_UNKNOWN_ERROR
-import io.mockk.Runs
-import io.mockk.every
-import io.mockk.just
+import io.mockk.*
 import org.junit.jupiter.api.Test
-import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 
 class CreateTransactionApplicationTest {
@@ -20,9 +19,10 @@ class CreateTransactionApplicationTest {
     private val merchant = "PADARIA DO ZE               SAO PAULO BR"
 
     private val accountRepository = mockk<AccountRepository>()
+    private val transactionRepository = mockk<TransactionRepository>()
     private val strategy = mockk<TransactionStrategy>()
 
-    private val application = CreateTransactionApplication(accountRepository, listOf(strategy))
+    private val application = CreateTransactionApplication(accountRepository, transactionRepository, listOf(strategy))
 
     @Test
     fun `returns true when strategy was found and transaction was executed`() {
@@ -31,14 +31,25 @@ class CreateTransactionApplicationTest {
             mealBalance = 300.0,
             cashBalance = 100.0
         )
+        val transactionEntity = TransactionEntity(
+            accountId = accountId,
+            amount = amount,
+            merchant = merchant,
+            mcc = mcc
+        )
         every { accountRepository.findByIdWithPessimisticLock(accountId) } returns accountEntity
         every { strategy.isAppliedTo(mcc, accountEntity, amount) } returns true
         every { strategy.execute(accountEntity, amount) } just Runs
         every { accountRepository.save(accountEntity) } returns accountEntity
+        every { transactionRepository.save(transactionEntity) } returns transactionEntity
 
         val result = application.perform(accountId, amount, mcc, merchant)
 
         assertThat(result).isEqualTo(APPROVED_TRANSACTION)
+        verify(exactly = 1) {
+            accountRepository.save(accountEntity)
+            transactionRepository.save(transactionEntity)
+        }
     }
 
     @Test
