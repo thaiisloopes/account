@@ -6,6 +6,7 @@ import com.caju.account.createtransaction.domain.strategies.TransactionStrategy
 import com.caju.account.createtransaction.inbound.resources.APPROVED_TRANSACTION
 import com.caju.account.createtransaction.inbound.resources.REJECTED_BY_MISSING_BALANCE
 import com.caju.account.createtransaction.inbound.resources.REJECTED_BY_UNKNOWN_ERROR
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 
 @Service
@@ -13,6 +14,7 @@ class CreateTransactionApplication(
     private val accountRepository: AccountRepository,
     private val strategies: List<TransactionStrategy>
 ) {
+    @Transactional
     fun perform(accountId: String, amount: Double, mcc: String, merchant: String): String {
         val accountEntity = accountRepository.findByIdWithPessimisticLock(accountId)
             ?: return REJECTED_BY_UNKNOWN_ERROR
