@@ -12,7 +12,6 @@ import io.mockk.just
 import org.junit.jupiter.api.Test
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
-import org.springframework.data.repository.findByIdOrNull
 
 class CreateTransactionApplicationTest {
     private val accountId = "123"
@@ -32,7 +31,7 @@ class CreateTransactionApplicationTest {
             mealBalance = 300.0,
             cashBalance = 100.0
         )
-        every { accountRepository.findByIdOrNull(accountId) } returns accountEntity
+        every { accountRepository.findByIdWithPessimisticLock(accountId) } returns accountEntity
         every { strategy.isAppliedTo(mcc, accountEntity, amount) } returns true
         every { strategy.execute(accountEntity, amount) } just Runs
         every { accountRepository.save(accountEntity) } returns accountEntity
@@ -49,7 +48,7 @@ class CreateTransactionApplicationTest {
             mealBalance = 300.0,
             cashBalance = 100.0
         )
-        every { accountRepository.findByIdOrNull(accountId) } returns accountEntity
+        every { accountRepository.findByIdWithPessimisticLock(accountId) } returns accountEntity
         every { strategy.isAppliedTo(mcc, accountEntity, amount) } returns false
 
         val result = application.perform(accountId, amount, mcc, merchant)
@@ -59,7 +58,7 @@ class CreateTransactionApplicationTest {
 
     @Test
     fun `returns false when no account was found`() {
-        every { accountRepository.findByIdOrNull(accountId) } returns null
+        every { accountRepository.findByIdWithPessimisticLock(accountId) } returns null
 
         val result = application.perform(accountId, amount, mcc, merchant)
 
