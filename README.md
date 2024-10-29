@@ -1,24 +1,36 @@
-# Getting Started
+# Account
 
-### Reference Documentation
-For further reference, please consider the following sections:
+Account is a service which manages transactions across accounts.
 
-* [Official Gradle documentation](https://docs.gradle.org)
-* [Spring Boot Gradle Plugin Reference Guide](https://docs.spring.io/spring-boot/3.3.5/gradle-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/3.3.5/gradle-plugin/packaging-oci-image.html)
-* [Spring Web](https://docs.spring.io/spring-boot/3.3.5/reference/web/servlet.html)
-* [Spring Data JPA](https://docs.spring.io/spring-boot/3.3.5/reference/data/sql.html#data.sql.jpa-and-spring-data)
+## Maintainer
+- Thaís Nunes
+  - **Email**: <tlnunes.ti@gmail.com>
+  - **Github**: <https://github.com/thaiisloopes>
+  - **Linkedin**: <https://www.linkedin.com/in/thaislopesnunes/>
 
-### Guides
-The following guides illustrate how to use some features concretely:
+### Environment
+| Env           | Url                   |
+|---------------|:----------------------|
+| Localhost     | http://localhost:8000 |
 
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
+### Requirements
+* [Docker](https://docs.docker.com/get-started/get-docker/)
+* [Docker Compose](https://docs.docker.com/compose/install/)
+* [Java 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
 
-### Additional Links
-These additional references should also help you:
+### Running locally
+To run locally, you need to run the following command to build and start the database container
 
-* [Gradle Build Scans – insights for your project's build](https://scans.gradle.com#gradle)
+```shell
+  docker-compose up db -d
+```
 
+After that, you can run the migrations with the following command:
+```shell
+  SPRING_PROFILES_ACTIVE=dbmigration ./gradlew bootRun
+```
+
+Finally, you can run the application:
+```shell
+  SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
+```
