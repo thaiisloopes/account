@@ -1,4 +1,4 @@
-package com.caju.account.runtransaction.inbound.resources
+package com.caju.account.createtransaction.inbound.resources
 
 data class TransactionRequest(
     val account: String,

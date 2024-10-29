@@ -1,7 +1,7 @@
-package com.caju.account.runtransaction.inbound
+package com.caju.account.createtransaction.inbound
 
-import com.caju.account.runtransaction.domain.applications.RunTransactionApplication
-import com.caju.account.runtransaction.inbound.resources.TransactionRequest
+import com.caju.account.createtransaction.domain.applications.CreateTransactionApplication
+import com.caju.account.createtransaction.inbound.resources.TransactionRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody
 @RestController
 @RequestMapping("/account")
 class TransactionController(
-    private val runTransactionApplication: RunTransactionApplication
+    private val createTransactionApplication: CreateTransactionApplication
 ) {
     @PostMapping("/transactions")
     fun create(@RequestBody request: TransactionRequest): ResponseEntity<Any> {
-        val response = runTransactionApplication.perform(
+        val response = createTransactionApplication.perform(
             accountId = request.account,
             amount = request.totalAmount,
             mcc = request.mcc,

@@ -1,12 +1,12 @@
-package com.caju.account.runtransaction.domain.applications
+package com.caju.account.createtransaction.domain.applications
 
 import com.caju.account.commons.infra.repositories.AccountRepository
-import com.caju.account.runtransaction.domain.strategies.TransactionStrategy
+import com.caju.account.createtransaction.domain.strategies.TransactionStrategy
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 @Service
-class RunTransactionApplication(
+class CreateTransactionApplication(
     private val accountRepository: AccountRepository,
     private val strategies: List<TransactionStrategy>
 ) {

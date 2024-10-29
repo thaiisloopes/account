@@ -1,8 +1,8 @@
-package com.caju.account.runtransaction.domain.applications
+package com.caju.account.createtransaction.domain.applications
 
 import com.caju.account.commons.infra.repositories.AccountRepository
 import com.caju.account.commons.infra.repositories.resources.AccountEntity
-import com.caju.account.runtransaction.domain.strategies.TransactionStrategy
+import com.caju.account.createtransaction.domain.strategies.TransactionStrategy
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -11,7 +11,7 @@ import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.data.repository.findByIdOrNull
 
-class RunTransactionApplicationTest {
+class CreateTransactionApplicationTest {
     private val accountId = "123"
     private val amount = 100.0
     private val mcc = "5411"
@@ -20,7 +20,7 @@ class RunTransactionApplicationTest {
     private val accountRepository = mockk<AccountRepository>()
     private val strategy = mockk<TransactionStrategy>()
 
-    private val application = RunTransactionApplication(accountRepository, listOf(strategy))
+    private val application = CreateTransactionApplication(accountRepository, listOf(strategy))
 
     @Test
     fun `returns true when strategy was found and transaction was executed`() {

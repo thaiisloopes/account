@@ -1,4 +1,4 @@
-package com.caju.account.runtransaction.domain.strategies
+package com.caju.account.createtransaction.domain.strategies
 
 import com.caju.account.commons.infra.repositories.resources.AccountEntity
 import org.springframework.stereotype.Component
