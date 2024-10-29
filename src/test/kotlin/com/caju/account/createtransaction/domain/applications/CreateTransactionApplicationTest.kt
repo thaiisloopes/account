@@ -3,6 +3,9 @@ package com.caju.account.createtransaction.domain.applications
 import com.caju.account.commons.infra.repositories.AccountRepository
 import com.caju.account.commons.infra.repositories.resources.AccountEntity
 import com.caju.account.createtransaction.domain.strategies.TransactionStrategy
+import com.caju.account.createtransaction.inbound.resources.APPROVED_TRANSACTION
+import com.caju.account.createtransaction.inbound.resources.REJECTED_BY_MISSING_BALANCE
+import com.caju.account.createtransaction.inbound.resources.REJECTED_BY_UNKNOWN_ERROR
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -36,7 +39,7 @@ class CreateTransactionApplicationTest {
 
         val result = application.perform(accountId, amount, mcc, merchant)
 
-        assertThat(result).isTrue()
+        assertThat(result).isEqualTo(APPROVED_TRANSACTION)
     }
 
     @Test
@@ -51,7 +54,7 @@ class CreateTransactionApplicationTest {
 
         val result = application.perform(accountId, amount, mcc, merchant)
 
-        assertThat(result).isFalse()
+        assertThat(result).isEqualTo(REJECTED_BY_MISSING_BALANCE)
     }
 
     @Test
@@ -60,6 +63,6 @@ class CreateTransactionApplicationTest {
 
         val result = application.perform(accountId, amount, mcc, merchant)
 
-        assertThat(result).isFalse()
+        assertThat(result).isEqualTo(REJECTED_BY_UNKNOWN_ERROR)
     }
 }
