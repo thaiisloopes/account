@@ -57,3 +57,16 @@ curl --location 'localhost:8000/transactions' \
 	"merchant": "PAG*JoseDaSilva          RIO DE JANEI BR"
 }'
 ```
+
+### Running tests
+
+For running unit tests, you can run the following command: 
+```shell
+./gradlew test
+```
+
+Before running integration tests, you need to check your db container is up and if migration was ran.
+After that, you can run the following command:
+```shell
+./gradlew integrationTest
+```
