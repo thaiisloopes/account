@@ -1,6 +1,7 @@
 package com.caju.account.createtransaction.domain.applications
 
 import com.caju.account.commons.infra.repositories.AccountRepository
+import com.caju.account.commons.infra.repositories.resources.AccountEntity
 import com.caju.account.createtransaction.domain.strategies.TransactionStrategy
 import com.caju.account.createtransaction.inbound.resources.APPROVED_TRANSACTION
 import com.caju.account.createtransaction.inbound.resources.REJECTED_BY_MISSING_BALANCE
@@ -14,15 +15,24 @@ class CreateTransactionApplication(
     private val strategies: List<TransactionStrategy>
 ) {
     fun perform(accountId: String, amount: Double, mcc: String, merchant: String): String {
-        val accountEntity = accountRepository.findByIdOrNull(accountId)
+        val accountEntity = accountRepository.findByIdOrNull(accountId) ?: return REJECTED_BY_UNKNOWN_ERROR
 
-        return accountEntity?.let { account ->
-            val strategy = strategies.find { it.isAppliedTo(mcc, account, amount) }
+        return accountEntity.let {
+            val strategy = strategies.find { it.isAppliedTo(mcc, accountEntity, amount) }
+
             if(strategy != null) {
-                strategy.execute(account, amount)
-                accountRepository.save(account)
-                APPROVED_TRANSACTION
+                handleApprovedTransaction(strategy, accountEntity, amount)
             } else REJECTED_BY_MISSING_BALANCE
-        } ?: REJECTED_BY_UNKNOWN_ERROR
+        }
+    }
+
+    private fun handleApprovedTransaction(
+        strategy: TransactionStrategy,
+        account: AccountEntity,
+        amount: Double
+    ): String {
+        strategy.execute(account, amount)
+        accountRepository.save(account)
+        return APPROVED_TRANSACTION
     }
 }
