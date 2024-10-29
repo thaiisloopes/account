@@ -8,10 +8,7 @@ class FoodTransactionStrategy: TransactionStrategy {
     override fun isAppliedTo(mcc: String, account: AccountEntity, amount: Double) =
         (mcc == "5411" || mcc == "5412") && account.foodBalance >= amount
 
-    override fun execute(account: AccountEntity, amount: Double): Boolean {
-        return if(amount > 0.0) {
-            account.foodBalance -= amount
-            true
-        } else false
+    override fun execute(account: AccountEntity, amount: Double) {
+        account.foodBalance -= amount
     }
 }

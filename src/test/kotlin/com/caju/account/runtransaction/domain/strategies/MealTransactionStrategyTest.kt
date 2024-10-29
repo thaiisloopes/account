@@ -55,19 +55,10 @@ class MealTransactionStrategyTest {
     @Nested
     inner class Execute {
         @Test
-        fun `returns true when balance is enough to execute debit`() {
-            val result = mealStrategy.execute(accountEntity, amount)
+        fun `updates meal balance`() {
+            mealStrategy.execute(accountEntity, amount)
 
-            assertThat(result).isTrue()
-        }
-
-        @Test
-        fun `returns false when amount to debit is 0`() {
-            val amount = 0.0
-
-            val result = mealStrategy.execute(accountEntity, amount)
-
-            assertThat(result).isFalse()
+            assertThat(accountEntity.mealBalance).isEqualTo(200.0)
         }
     }
 }

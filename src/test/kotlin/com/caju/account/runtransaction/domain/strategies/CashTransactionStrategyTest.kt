@@ -48,19 +48,10 @@ class CashTransactionStrategyTest {
     @Nested
     inner class Execute {
         @Test
-        fun `returns true when balance is enough to execute debit`() {
-            val result = cashStrategy.execute(accountEntity, amount)
+        fun `updates cash balance`() {
+            cashStrategy.execute(accountEntity, amount)
 
-            assertThat(result).isTrue()
-        }
-
-        @Test
-        fun `returns false when amount to debit is 0`() {
-            val amount = 0.0
-
-            val result = cashStrategy.execute(accountEntity, amount)
-
-            assertThat(result).isFalse()
+            assertThat(accountEntity.cashBalance).isEqualTo(50.0)
         }
     }
 }
