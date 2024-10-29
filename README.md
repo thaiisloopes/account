@@ -34,3 +34,16 @@ Finally, you can run the application:
 ```shell
   SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
 ```
+
+In order to try to authorize a transaction, you can run the following curl:
+
+```shell
+curl --location 'localhost:8000/account/transactions' \
+--header 'Content-Type: application/json' \
+--data '{
+	"account": "1",
+	"totalAmount": 50.00,
+	"mcc": "5812",
+	"merchant": "PAG*JoseDaSilva          RIO DE JANEI BR"
+}'
+```
