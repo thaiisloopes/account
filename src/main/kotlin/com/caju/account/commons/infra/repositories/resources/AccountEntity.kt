@@ -11,7 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
 
 @Entity
-@Table(name = "account")
+@Table(name = "accounts")
 data class AccountEntity(
     var foodBalance: Double,
     var mealBalance: Double,
