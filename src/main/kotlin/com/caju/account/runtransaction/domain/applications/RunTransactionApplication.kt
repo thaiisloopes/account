@@ -14,8 +14,12 @@ class RunTransactionApplication(
         val accountEntity = accountRepository.findByIdOrNull(accountId)
 
         return accountEntity?.let { account ->
-            val strategy = strategies.find { it.isAppliedTo(mcc) }
-            strategy?.execute(account, amount)
+            val strategy = strategies.find { it.isAppliedTo(mcc, account, amount) }
+            if(strategy != null) {
+                strategy.execute(account, amount)
+                accountRepository.save(account)
+                true
+            } else false
         } ?: false
     }
 }
