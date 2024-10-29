@@ -11,11 +11,11 @@ import org.springframework.http.HttpStatus.OK
 import org.springframework.web.bind.annotation.RequestBody
 
 @RestController
-@RequestMapping("/account")
+@RequestMapping("/transactions")
 class TransactionController(
     private val createTransactionApplication: CreateTransactionApplication
 ) {
-    @PostMapping("/transactions")
+    @PostMapping
     fun create(@RequestBody request: TransactionRequest): ResponseEntity<TransactionResponse> {
         val response = createTransactionApplication.perform(
             accountId = request.account,
