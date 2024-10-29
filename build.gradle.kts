@@ -48,3 +48,12 @@ allOpen {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+sourceSets {
+	create("integrationTest") {
+		java.srcDir("src/integrationTest/scala")
+		resources.srcDir("src/integrationTest/resources")
+		runtimeClasspath += sourceSets["main"].runtimeClasspath + sourceSets["test"].runtimeClasspath
+		compileClasspath += sourceSets["main"].compileClasspath + sourceSets["test"].compileClasspath
+	}
+}

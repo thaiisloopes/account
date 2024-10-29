@@ -2,12 +2,10 @@ package com.caju.account.createaccount.domain.applications
 
 import com.caju.account.commons.infra.repositories.AccountRepository
 import com.caju.account.commons.infra.repositories.resources.AccountEntity
-import io.mockk.Runs
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import io.mockk.just
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
