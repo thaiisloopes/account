@@ -5,6 +5,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.6"
 	kotlin("plugin.jpa") version "1.9.22"
 	id("io.gitlab.arturbosch.detekt") version "1.23.7"
+	id("jacoco")
 }
 
 group = "com.caju"
@@ -14,6 +15,10 @@ java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(17)
 	}
+}
+
+jacoco {
+	toolVersion = "0.8.7"
 }
 
 repositories {
@@ -67,4 +72,32 @@ sourceSets {
 		runtimeClasspath += sourceSets["main"].runtimeClasspath + sourceSets["test"].runtimeClasspath
 		compileClasspath += sourceSets["main"].compileClasspath + sourceSets["test"].compileClasspath
 	}
+}
+
+fun ignorePackagesInJacocoReport(classDirectories: ConfigurableFileCollection) {
+	classDirectories.setFrom(
+		files(
+			classDirectories.files.map {
+				fileTree(it).apply {
+					exclude(
+						"**/caju/**/*.kts",
+						"**/caju/**/infra/**"
+					)
+				}
+			}
+		)
+	)
+}
+
+tasks.register<JacocoReport>("jacocoReport") {
+	sourceSets(sourceSets.main.get())
+	executionData(fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec"))
+
+	reports {
+		xml.required.set(true)
+		csv.required.set(false)
+		html.required.set(true)
+		html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+	}
+	ignorePackagesInJacocoReport(classDirectories)
 }
