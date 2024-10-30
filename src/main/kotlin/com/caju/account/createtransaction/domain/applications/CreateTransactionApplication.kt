@@ -20,7 +20,7 @@ class CreateTransactionApplication(
 ) {
     @Transactional
     fun perform(accountId: String, amount: Double, mcc: String, merchant: String): String {
-        return try{
+        return runCatching{
             val accountEntity = accountRepository.findByIdWithPessimisticLock(accountId)
                 ?: return REJECTED_BY_UNKNOWN_ERROR
 
@@ -32,9 +32,7 @@ class CreateTransactionApplication(
                     handleApprovedTransaction(strategy, accountEntity, transactionEntity, amount)
                 } else REJECTED_BY_MISSING_BALANCE
             }
-        } catch (exception: Exception) {
-            REJECTED_BY_UNKNOWN_ERROR
-        }
+        }.getOrElse { REJECTED_BY_UNKNOWN_ERROR }
     }
 
     private fun handleApprovedTransaction(
