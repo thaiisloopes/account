@@ -20,16 +20,20 @@ class CreateTransactionApplication(
 ) {
     @Transactional
     fun perform(accountId: String, amount: Double, mcc: String, merchant: String): String {
-        val accountEntity = accountRepository.findByIdWithPessimisticLock(accountId)
-            ?: return REJECTED_BY_UNKNOWN_ERROR
+        return try{
+            val accountEntity = accountRepository.findByIdWithPessimisticLock(accountId)
+                ?: return REJECTED_BY_UNKNOWN_ERROR
 
-        return accountEntity.let {
-            val strategy = strategies.find { it.isAppliedTo(getMcc(mcc, merchant), accountEntity, amount) }
+            accountEntity.let {
+                val strategy = strategies.find { it.isAppliedTo(getMcc(mcc, merchant), accountEntity, amount) }
 
-            if(strategy != null) {
-                val transactionEntity = TransactionEntity(accountId, amount, merchant, getMcc(mcc, merchant))
-                handleApprovedTransaction(strategy, accountEntity, transactionEntity, amount)
-            } else REJECTED_BY_MISSING_BALANCE
+                if(strategy != null) {
+                    val transactionEntity = TransactionEntity(accountId, amount, merchant, getMcc(mcc, merchant))
+                    handleApprovedTransaction(strategy, accountEntity, transactionEntity, amount)
+                } else REJECTED_BY_MISSING_BALANCE
+            }
+        } catch (exception: Exception) {
+            REJECTED_BY_UNKNOWN_ERROR
         }
     }
 

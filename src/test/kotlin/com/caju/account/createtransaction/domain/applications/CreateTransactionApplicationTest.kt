@@ -8,9 +8,14 @@ import com.caju.account.createtransaction.domain.strategies.TransactionStrategy
 import com.caju.account.createtransaction.inbound.resources.APPROVED_TRANSACTION
 import com.caju.account.createtransaction.inbound.resources.REJECTED_BY_MISSING_BALANCE
 import com.caju.account.createtransaction.inbound.resources.REJECTED_BY_UNKNOWN_ERROR
-import io.mockk.*
+import io.mockk.mockk
+import io.mockk.every
+import io.mockk.just
+import io.mockk.Runs
+import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.assertj.core.api.Assertions.assertThat
+import java.lang.Exception
 
 class CreateTransactionApplicationTest {
     private val accountId = "123"
@@ -25,7 +30,7 @@ class CreateTransactionApplicationTest {
     private val application = CreateTransactionApplication(accountRepository, transactionRepository, listOf(strategy))
 
     @Test
-    fun `returns true when strategy was found and transaction was executed`() {
+    fun `returns approved code when strategy was found and transaction was executed`() {
         val accountEntity = AccountEntity(
             foodBalance = 200.0,
             mealBalance = 300.0,
@@ -53,7 +58,7 @@ class CreateTransactionApplicationTest {
     }
 
     @Test
-    fun `returns false when no strategy was found`() {
+    fun `returns rejected by missing balance code when no strategy was found`() {
         val accountEntity = AccountEntity(
             foodBalance = 200.0,
             mealBalance = 300.0,
@@ -68,8 +73,17 @@ class CreateTransactionApplicationTest {
     }
 
     @Test
-    fun `returns false when no account was found`() {
+    fun `returns rejected by unknown error code when no account was found`() {
         every { accountRepository.findByIdWithPessimisticLock(accountId) } returns null
+
+        val result = application.perform(accountId, amount, mcc, merchant)
+
+        assertThat(result).isEqualTo(REJECTED_BY_UNKNOWN_ERROR)
+    }
+
+    @Test
+    fun `returns rejected by unknown error code when any exception occurs`() {
+        every { accountRepository.findByIdWithPessimisticLock(accountId) } throws Exception("error")
 
         val result = application.perform(accountId, amount, mcc, merchant)
 
