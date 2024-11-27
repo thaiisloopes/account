@@ -58,11 +58,33 @@ class CreateTransactionApplicationTest {
     }
 
     @Test
-    fun `returns rejected by missing balance code when no strategy was found`() {
+    fun `returns approved code when no strategy was found but cash balance was enough`() {
+        val accountEntity = AccountEntity(
+            foodBalance = 50.0,
+            mealBalance = 50.0,
+            cashBalance = 100.0
+        )
+        val transactionEntity = TransactionEntity(
+            accountId = accountId,
+            amount = amount,
+            merchant = merchant,
+            mcc = mcc
+        )
+        every { accountRepository.findByIdWithPessimisticLock(accountId) } returns accountEntity
+        every { strategy.isAppliedTo(mcc, accountEntity, amount) } returns false
+        every { transactionRepository.save(transactionEntity) } returns transactionEntity
+
+        val result = application.perform(accountId, amount, mcc, merchant)
+
+        assertThat(result).isEqualTo(APPROVED_TRANSACTION)
+    }
+
+    @Test
+    fun `returns rejected by missing balance code when no strategy was found and cash balance is not enough`() {
         val accountEntity = AccountEntity(
             foodBalance = 200.0,
             mealBalance = 300.0,
-            cashBalance = 100.0
+            cashBalance = 50.0
         )
         every { accountRepository.findByIdWithPessimisticLock(accountId) } returns accountEntity
         every { strategy.isAppliedTo(mcc, accountEntity, amount) } returns false
