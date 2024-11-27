@@ -70,3 +70,14 @@ After that, you can run the following command:
 ```shell
 ./gradlew integrationTest
 ```
+
+## ToDo
+- Estabelecimento como cache no Redis
+- Exceções específicas
+- Error handler
+- Uso do copy, mantendo imutabilidade dos objetos
+- Refactor da application
+- Isolar objetos de domínio/request/response
+- Builders nos testes
+- Mais testes de integração (saldo insuficiente é sucesso)
+- Isolar a verificação de saldo suficiente na conta
